@@ -59,7 +59,7 @@ const paddleOpponent = {
   y: h / 2,
   vx: 0,
   vy: 0,
-  velocity: 10,
+  velocity: 100,
 };
 
 // skapar variabler för puckens och paddelns radie, diameter och diameter^2
