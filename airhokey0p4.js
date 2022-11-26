@@ -59,7 +59,7 @@ const paddleOpponent = {
   y: h / 2,
   vx: 0,
   vy: 0,
-  velocity: 100,
+  velocity: 10,
 };
 
 // skapar variabler för puckens och paddelns radie, diameter och diameter^2
@@ -145,12 +145,12 @@ function velPaddle() {
   paddle.lastY = paddle.y;
 
   // Sätter maxhastigheten till 30
-  /*if (paddle.vx > 150) {
-    paddle.vx = 150;
+  if (paddle.vx > 70) {
+    paddle.vx = 70;
   }
-  if (paddle.vy > 150) {
-    paddle.vy = 150;
-  }*/
+  if (paddle.vy > 70) {
+    paddle.vy = 70;
+  }
 }
 
 // Ritar motståndarens paddel
