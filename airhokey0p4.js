@@ -2,7 +2,7 @@
 
 /*****************************
  * Air Hockey By Ivar Fahlén *
- *       Version 0.3         *
+ *       Version 0.5         *
  ****************************/
 
 //sätter upp canvas
@@ -15,19 +15,24 @@ canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 canvas.style.cursor = "none";
 
-// skapar variabler för canvas höjd och bredd
+// deklarerar variabler för canvas höjd och bredd
 // för att lättare kunna hänvisa till de i koden
 let w = canvas.width;
 let h = canvas.height;
 
+// Variabel för förhållandet mellan en bredd och höjd på en 16:9 skärn.
+// Detta används som mått för nästan alla typer av mått på spelplanen och hastigheter.
+let HtoW = h * 1.77777777778;
+
+// Kollar om pucken kolliderat med moståndarens paddel
 let collide = false;
 
-//variabler för  de olika ljuden som ska spelas under spelets gång
+// Variabler för  de olika ljuden som ska spelas under spelets gång
 let click = new Audio("AirHockeyClick.mp3");
 let goalSound = new Audio("goal.mp3");
 
-// Variabel som visar om något ljud spelas
-// för att kunna stänga av det när nästa ljud ska spelas
+// Variabel som visar om något ljud spelas för att
+// kunna stänga av det när nästa ljud ska spelas.
 let checkAudio = false;
 
 // Variabler som håller koll på målställningen
@@ -53,17 +58,17 @@ const paddle = {
   vy: 0,
 };
 
-//creating Opponent
+// skapar objektet för motståndarens paddel.
 const paddleOpponent = {
   x: w - 150,
   y: h / 2,
   vx: 0,
   vy: 0,
-  velocity: 10,
+  velocity: HtoW / 192,
 };
 
 // skapar variabler för puckens och paddelns radie, diameter och diameter^2
-let rad = w / 32;
+let rad = HtoW / 32;
 let diameter = 2 * rad;
 let diameter2 = (2 * rad) ** 2;
 
@@ -72,7 +77,7 @@ canvas.addEventListener("mousemove", function mousePos(e) {
   (paddle.x = e.clientX), (paddle.y = e.clientY);
 });
 
-
+/*
 canvas.addEventListener(
   "touchstart",
   (e) => {
@@ -106,13 +111,15 @@ canvas.addEventListener(
   false
 );
 
+*/
+
 // Ritar upp bordet, vilket innefattar kanterna av bordet samt dekoration på bordet.
 // Nästan allt som ritas upp har inte enheten pixlar utan använder bredden på canvas
 // som en enhet för att allt ska se snyggt ut på vilken skärm som helst.
 function drawTable() {
   //ritar en röd något transparent linje i mitten
   ctx.beginPath();
-  ctx.lineWidth = w / 122;
+  ctx.lineWidth = HtoW / 122;
   ctx.strokeStyle = "rgba(255, 0, 0, 0.5)";
   ctx.fillStyle = "rgba(255, 0, 0, 0.5)";
   ctx.moveTo(w / 2, 0);
@@ -131,8 +138,8 @@ function drawTable() {
 
   //ritar en stor blå cirkel i mitten
   ctx.beginPath();
-  ctx.lineWidth = w / 182;
-  ctx.arc(w / 2, h / 2, w / 13, 0, Math.PI * 2);
+  ctx.lineWidth = HtoW / 182;
+  ctx.arc(w / 2, h / 2, HtoW / 13, 0, Math.PI * 2);
   ctx.stroke();
 
   // ritar en liten blå cirkel i mitten
@@ -145,12 +152,12 @@ function drawTable() {
   ctx.beginPath();
   ctx.strokeStyle = "black";
   ctx.fillStyle = "black";
-  ctx.rect(0, 0, w - w / 128, w / 128);
-  ctx.rect(0, 0, w / 128, h / 2 - w / 17.5 - rad);
-  ctx.rect(0, h, w / 128, -h / 2 + w / 17.5 + rad);
-  ctx.rect(w, 0, -w / 128, h / 2 - w / 17.5 - rad);
-  ctx.rect(w, h, -w / 128, -h / 2 + w / 17.5 + rad);
-  ctx.rect(w / 128, h - w / 128, w - w / 128, w / 128);
+  ctx.rect(0, 0, w - HtoW / 128, HtoW / 128);
+  ctx.rect(0, 0, HtoW / 128, h / 2 - HtoW / 17.5 - rad);
+  ctx.rect(0, h, HtoW / 128, -h / 2 + HtoW / 17.5 + rad);
+  ctx.rect(w, 0, -HtoW / 128, h / 2 - HtoW / 17.5 - rad);
+  ctx.rect(w, h, -HtoW / 128, -h / 2 + HtoW / 17.5 + rad);
+  ctx.rect(HtoW / 128, h - HtoW / 128, w - HtoW / 128, HtoW / 128);
   ctx.fill();
   ctx.stroke();
 }
@@ -179,12 +186,12 @@ function velPaddle() {
   paddle.lastY = paddle.y;
 
   // Sätter maxhastigheten till 30
-  if (paddle.vx > 70) {
-    paddle.vx = 70;
+  /*if (paddle.vx > 150) {
+    paddle.vx = 150;
   }
-  if (paddle.vy > 70) {
-    paddle.vy = 70;
-  }
+  if (paddle.vy > 150) {
+    paddle.vy = 150;
+  }*/
 }
 
 // Ritar motståndarens paddel
@@ -237,7 +244,7 @@ function drawOpponent() {
     }
     // När paddeln har åkt tillbaka till sitt ursprungliga x-värde stängs collide
     // av och paddeln kan åka fram igen, förutsatt att pucken är på dess planhalva.
-    if (paddleOpponent.x > w - w / 6.4) {
+    if (paddleOpponent.x > w - HtoW / 6.4) {
       collide = false;
     }
   }
@@ -249,7 +256,7 @@ function drawOpponent() {
 
   // Flyttar tillbaka motståndarens paddel till ursprungspositionen
   // om den är till vänster om positionen
-  if (puck.x < w / 2 && paddleOpponent.x < w - w / 6.4) {
+  if (puck.x < w / 2 && paddleOpponent.x < w - HtoW / 6.4) {
     // Om paddeln är på nedre halvan åker den tillbaks till mitten
     if (paddleOpponent.y > h / 2) {
       paddleOpponent.y -= paddleOpponent.velocity;
@@ -263,7 +270,7 @@ function drawOpponent() {
 
   // Flyttar tillbaka motståndarens paddel till utgångspunkten
   // om den är till höger om positionen
-  if (puck.x < w / 2 && paddleOpponent.x > w - w / 6.4) {
+  if (puck.x < w / 2 && paddleOpponent.x > w - HtoW / 6.4) {
     // Om paddeln är på nedre halvan åker den tillbaka till mitten
     if (paddleOpponent.y > h / 2) {
       paddleOpponent.y -= paddleOpponent.velocity;
@@ -291,13 +298,13 @@ function drawPuck() {
   puck.y += puck.vy;
 
   // Här tittar programmet om pucken befinner sig på någon av kanterna till höger
-  // eller vänster i canvas. w / 80 är här tjockleken av de svarta kanterna vilket
+  // eller vänster i canvas. HtoW /  80 är här tjockleken av de svarta kanterna vilket
   // gör att pucken studsar mot de istället för kanterna av canvas.
-  if (puck.x > w - rad - w / 80 || puck.x < rad + w / 80) {
+  if (puck.x > w - rad - HtoW / 80 || puck.x < rad + HtoW / 80) {
     // Här tittar vi om pucken befinner sig inom målet eller inte då den
     // är vid någon av kanterna, är den det så ska den inte studsa mot kanten.
     // Här testas om den är vid undre delen av målet.
-    if (puck.y > h / 2 + w / 17.5) {
+    if (puck.y > h / 2 + HtoW / 17.5) {
       puck.vx *= -1;
       if (!checkAudio) {
         click.play();
@@ -312,7 +319,7 @@ function drawPuck() {
     }
 
     // Här testas om den är vid övre delen av målet.
-    if (puck.y < h / 2 - w / 17.5) {
+    if (puck.y < h / 2 - HtoW / 17.5) {
       puck.vx *= -1;
       if (!checkAudio) {
         click.play();
@@ -328,8 +335,8 @@ function drawPuck() {
   }
 
   // Här testas om pucken befinner sig vid någon av den undre eller
-  // övre kanten, då den ska studsa. Även här är w / 80 tjockleken av de svarta kanterna.
-  if (puck.y > h - rad - w / 80 || puck.y < rad + w / 80) {
+  // övre kanten, då den ska studsa. Även här är HtoW /  80 tjockleken av de svarta kanterna.
+  if (puck.y > h - rad - HtoW / 80 || puck.y < rad + HtoW / 80) {
     puck.vy *= -1;
     if (!checkAudio) {
       click.play();
@@ -359,28 +366,28 @@ function drawPuck() {
 // någon kant.
 function bringBackPuck() {
   // Överkanten
-  if (puck.y < w / 80 + rad) {
-    puck.y = w / 80 + rad;
+  if (puck.y < HtoW / 80 + rad) {
+    puck.y = HtoW / 80 + rad;
   }
   // Underkanten
-  if (puck.y > h - w / 80 - rad) {
-    puck.y = h - w / 80 - rad;
+  if (puck.y > h - HtoW / 80 - rad) {
+    puck.y = h - HtoW / 80 - rad;
   }
   // Vänster kant under målet
-  if (puck.x < w / 80 + rad && puck.y > h / 2 + w / 10.5) {
-    puck.x = w / 80 + rad;
+  if (puck.x < HtoW / 80 + rad && puck.y > h / 2 + HtoW / 10.5) {
+    puck.x = HtoW / 80 + rad;
   }
   // Vänster kant över målet
-  if (puck.x < w / 80 + rad && puck.y < h / 2 - w / 10.5) {
-    puck.x = w / 80 + rad;
+  if (puck.x < HtoW / 80 + rad && puck.y < h / 2 - HtoW / 10.5) {
+    puck.x = HtoW / 80 + rad;
   }
   // Höger kant över målet
-  if (puck.x > w - w / 80 - rad && puck.y < h / 2 - w / 10.5) {
-    puck.x = w - w / 80 - rad;
+  if (puck.x > w - HtoW / 80 - rad && puck.y < h / 2 - HtoW / 10.5) {
+    puck.x = w - HtoW / 80 - rad;
   }
   // Höger kant under målet
-  if (puck.x > w - w / 80 - rad && puck.y > h / 2 + w / 10.5) {
-    puck.x = w - w / 80 - rad;
+  if (puck.x > w - HtoW / 80 - rad && puck.y > h / 2 + HtoW / 10.5) {
+    puck.x = w - HtoW / 80 - rad;
   }
 }
 
