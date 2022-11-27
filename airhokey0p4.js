@@ -72,6 +72,40 @@ canvas.addEventListener("mousemove", function mousePos(e) {
   (paddle.x = e.clientX), (paddle.y = e.clientY);
 });
 
+
+canvas.addEventListener(
+  "touchstart",
+  (e) => {
+    // Cache the client X/Y coordinates
+    paddle.x = e.touches[0].clientX;
+    paddle.y = e.touches[0].clientY;
+  },
+  false
+);
+
+//touch bre
+function touch() {
+  canvas.addEventListener(
+    "touchmove",
+    (e) => {
+      // Cache the client X/Y coordinates
+      paddle.x = e.touches[0].clientX;
+      paddle.y = e.touches[0].clientY;
+    },
+    false
+  );
+}
+canvas.addEventListener(
+  "touchend",
+  (e) => {
+    let deltaX;
+    let deltaY;
+    deltaX = e.changedTouches[0].clientX - clientX;
+    deltaY = e.changedTouches[0].clientY - clientY;
+  },
+  false
+);
+
 // Ritar upp bordet, vilket innefattar kanterna av bordet samt dekoration på bordet.
 // Nästan allt som ritas upp har inte enheten pixlar utan använder bredden på canvas
 // som en enhet för att allt ska se snyggt ut på vilken skärm som helst.
